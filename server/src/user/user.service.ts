@@ -5,22 +5,22 @@ import { User } from "./entities/user.entity";
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+	constructor(private readonly prisma: PrismaService) {}
 
-  async findUser(email: string): Promise<User | void> {
-    const user = await this.prisma.user.findUnique({ where: { email } });
-    return user ? user : null;
-  }
+	async findUser(email: string): Promise<User | void> {
+		const user = await this.prisma.user.findUnique({ where: { email } });
+		return user ? user : null;
+	}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    return await this.prisma.user.create({ data: { ...createUserDto } });
-  }
+	async create(createUserDto: CreateUserDto): Promise<User> {
+		return await this.prisma.user.create({ data: { ...createUserDto } });
+	}
 
-  async searchUser(email: string): Promise<User[]> {
-    const user = await this.prisma.user.findMany({
-      where: { email: { contains: email } },
-      orderBy: { email: "asc" },
-    });
-    return user ? user : null;
-  }
+	async searchUser(email: string): Promise<User[]> {
+		const user = await this.prisma.user.findMany({
+			where: { email: { contains: email } },
+			orderBy: { email: "asc" },
+		});
+		return user ? user : null;
+	}
 }

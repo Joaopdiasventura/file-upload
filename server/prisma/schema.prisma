@@ -16,6 +16,7 @@ model User {
 
 model File {
   id            String @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
   user          String @map("fk_user_email")
   metadata      Json
   fk_user_email User   @relation(references: [email], fields: [user])

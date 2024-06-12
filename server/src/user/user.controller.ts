@@ -15,8 +15,6 @@ export class UserController {
 	@Post("register")
 	async register(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
 		const existUser = await this.service.findUser(createUserDto.email);
-    console.log(existUser);
-    
 
 		if (existUser)
 			return res.status(400).send({
@@ -26,8 +24,7 @@ export class UserController {
 		createUserDto.password = this.hashPassword(createUserDto.password);
 
 		const result = await this.service.create(createUserDto);
-    console.log(result);
-    
+		console.log(result);
 
 		return res.status(201).send({ token: this.encode(result.email) });
 	}
