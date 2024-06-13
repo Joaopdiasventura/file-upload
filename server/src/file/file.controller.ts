@@ -41,7 +41,7 @@ export class FileController {
 
 		if (!user)
 			return res.status(400).send({
-				msg: "Você precisa estar cadastrado para realizar o login",
+				msg: "Você precisa estar cadastrado para adicionar alguém em um arquivo",
 			});
 
 		const file = await this.fileService.findFile(addUserFileDto.file);
