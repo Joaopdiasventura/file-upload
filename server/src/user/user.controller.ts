@@ -24,7 +24,6 @@ export class UserController {
 		createUserDto.password = this.hashPassword(createUserDto.password);
 
 		const result = await this.service.create(createUserDto);
-		console.log(result);
 
 		return res.status(201).send({ token: this.encode(result.email) });
 	}
@@ -66,7 +65,7 @@ export class UserController {
 			const user = await this.service.findUser(email as string);
 			return res.status(200).send(user);
 		} catch (error) {
-			return res.status(400).send({ message: "Token inválido" });
+			return res.status(400).send({ msg: "Token inválido" });
 		}
 	}
 

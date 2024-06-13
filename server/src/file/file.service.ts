@@ -1,28 +1,76 @@
+import { UpdateUserFileDto } from "./dto/update-userFile.dto";
+import { GetFilesByUserNameDto } from "./dto/getFilesByUserNameDto.dto";
+import { AddUserFileDto } from "./dto/addUser-file.dto";
 import { Injectable } from "@nestjs/common";
 import { CreateFileDto } from "./dto/create-file.dto";
-import { UpdateFileDto } from "./dto/update-file.dto";
 import { PrismaService } from "src/database/prisma.service";
+import { File } from "./entities/file.entity";
 
 @Injectable()
 export class FileService {
 	constructor(private readonly prisma: PrismaService) {}
-	async create(createFileDto: CreateFileDto) {
-		return await this.prisma.file.create({ data: { ...createFileDto } });
+
+	async findFile(id: string):Promise<File | void> {
+		return (await this.prisma.file.findUnique({ where: { id } })) || null;
 	}
 
-	findAll() {
-		return `This action returns all file`;
+	async create(createFileDto: CreateFileDto): Promise<File> {
+		const { user, ...dto } = createFileDto;
+		const file = await this.prisma.file.create({ data: { ...dto } });
+		await this.prisma.userFile.create({
+			data: { user, file: file.id, canChange: true, isAdm: true },
+		});
+		return file;
 	}
 
-	findOne(id: number) {
-		return `This action returns a #${id} file`;
+	async addUserFile(addUserFileDto: AddUserFileDto) {
+		await this.prisma.userFile.create({ data: { ...addUserFileDto } });
 	}
 
-	update(id: number, updateFileDto: UpdateFileDto) {
-		return `This action updates a #${id} file`;
+	async updateUser(updateUserFileDto: UpdateUserFileDto) {
+		const { id, ...dto } = updateUserFileDto;
+		await this.prisma.userFile.update({
+			where: { id },
+			data: { ...dto },
+		});
 	}
 
-	remove(id: number) {
-		return `This action removes a #${id} file`;
+	async getFilesByUser(user: string) {
+		const filesWithUser = await this.prisma.userFile.findMany({
+			where: { user },
+			include: {
+				fk_file_id: true,
+			},
+		});
+
+		return filesWithUser.map((fileUser) => fileUser.fk_file_id);
+	}
+
+	async getUsersByFile(file: string) {
+		const users = await this.prisma.userFile.findMany({
+			where: { file },
+			include: {
+				fk_user_email: true,
+			},
+		});
+		return users;
+	}
+
+	async getFilesByName(getFilesByUserNameDto: GetFilesByUserNameDto) {
+		const { user, name } = getFilesByUserNameDto;
+		const userFiles = await this.prisma.userFile.findMany({
+			where: {
+				user,
+				fk_file_id: {
+					name: {
+						contains: name,
+					},
+				},
+			},
+			include: {
+				fk_file_id: true,
+			},
+		});
+		return userFiles.map((userFile) => userFile.fk_file_id);
 	}
 }

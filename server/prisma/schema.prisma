@@ -8,16 +8,25 @@ datasource db {
 }
 
 model User {
-  email    String @id @map("_id")
+  email    String     @id @map("_id")
   name     String
   password String
-  File     File[]
+  UserFile UserFile[]
+}
+
+model UserFile {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  canChange     Boolean
+  isAdm         Boolean
+  user          String  @map("fk_user_email")
+  file          String  @map("fk_file_id") @db.ObjectId
+  fk_user_email User    @relation(references: [email], fields: [user])
+  fk_file_id    File    @relation(references: [id], fields: [file], onDelete: Cascade)
 }
 
 model File {
-  id            String @id @default(auto()) @map("_id") @db.ObjectId
-  name          String
-  user          String @map("fk_user_email")
-  metadata      Json
-  fk_user_email User   @relation(references: [email], fields: [user])
+  id       String     @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  metadata Json
+  UserFile UserFile[]
 }

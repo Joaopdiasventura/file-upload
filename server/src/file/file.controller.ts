@@ -1,3 +1,4 @@
+import { AddUserFileDto } from "./dto/addUser-file.dto";
 import {
 	Res,
 	Controller,
@@ -11,7 +12,6 @@ import {
 import { Response } from "express";
 import { FileService } from "./file.service";
 import { CreateFileDto } from "./dto/create-file.dto";
-import { UpdateFileDto } from "./dto/update-file.dto";
 import { UserService } from "src/user/user.service";
 
 @Controller("file")
@@ -28,27 +28,75 @@ export class FileController {
 		return user
 			? res.status(201).send(await this.fileService.create(createFileDto))
 			: res.status(400).send({
-					msg: "Você precisa estar cadastrado para realizar o login",
+					msg: "Você precisa estar cadastrado para criar um arquivo",
 				});
 	}
 
-	@Get()
-	findAll() {
-		return this.fileService.findAll();
+	@Post("addUserFile")
+	async addUserFile(
+		@Body() addUserFileDto: AddUserFileDto,
+		@Res() res: Response,
+	) {
+		const user = await this.userService.findUser(addUserFileDto.user);
+
+		if (!user)
+			return res.status(400).send({
+				msg: "Você precisa estar cadastrado para realizar o login",
+			});
+
+		const file = await this.fileService.findFile(addUserFileDto.file);
+
+		if (!file) return res.status(400).send({ msg: "Arquivo inexistente" });
+
+		await this.fileService.addUserFile(addUserFileDto);
+		return res
+			.status(201)
+			.send({ msg: "Usuário adicionado ao arquivo com sucesso" });
 	}
 
-	@Get(":id")
-	findOne(@Param("id") id: string) {
-		return this.fileService.findOne(+id);
+	@Get("/getFilesByUser/:user")
+	async getFilesByUser(@Param("user") user: string, @Res() res: Response) {
+		const existUser = await this.userService.findUser(user);
+
+		if (!existUser)
+			return res.status(400).send({
+				msg: "Você precisa estar cadastrado para realizar o login",
+			});
+
+		return res
+			.status(200)
+			.send(await this.fileService.getFilesByUser(user));
 	}
 
-	@Patch(":id")
-	update(@Param("id") id: string, @Body() updateFileDto: UpdateFileDto) {
-		return this.fileService.update(+id, updateFileDto);
+	@Get("/getUsersByFile/:file")
+	async getUsersByFile(@Param("file") file: string, @Res() res: Response) {
+		const existFile = await this.fileService.findFile(file);
+
+		if (!existFile)
+			return res.status(404).send({
+				msg: "Aquivo não encontrado",
+			});
+
+		return res
+			.status(200)
+			.send(await this.fileService.getUsersByFile(file));
 	}
 
-	@Delete(":id")
-	remove(@Param("id") id: string) {
-		return this.fileService.remove(+id);
+	@Get("/getFilesByName/:user/:name")
+	async getFilesByName(
+		@Param("user") user: string,
+		@Param("name") name: string,
+		@Res() res: Response,
+	) {
+		const existUser = await this.userService.findUser(user);
+
+		if (!existUser)
+			return res.status(400).send({
+				msg: "Você precisa estar cadastrado para realizar o login",
+			});
+
+		return res
+			.status(200)
+			.send(await this.fileService.getFilesByName({ user, name }));
 	}
 }
