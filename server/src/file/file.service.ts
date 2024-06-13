@@ -10,7 +10,7 @@ import { File } from "./entities/file.entity";
 export class FileService {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async findFile(id: string):Promise<File | void> {
+	async findFile(id: string): Promise<File | void> {
 		return (await this.prisma.file.findUnique({ where: { id } })) || null;
 	}
 

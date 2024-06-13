@@ -1,4 +1,8 @@
-import { PartialType } from "@nestjs/mapped-types";
-import { CreateUserDto } from "./create-user.dto";
+import { IsNotEmpty } from "class-validator";
 
-export class LoginUserDto extends PartialType(CreateUserDto) {}
+export class LoginUserDto {
+	@IsNotEmpty({ message: "Campo 'email' não pode ficar vazio" })
+	email: string;
+	@IsNotEmpty({ message: "Campo 'password' não pode ficar vazio" })
+	password: string;
+}

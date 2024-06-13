@@ -1,14 +1,5 @@
 import { AddUserFileDto } from "./dto/addUser-file.dto";
-import {
-	Res,
-	Controller,
-	Get,
-	Post,
-	Body,
-	Patch,
-	Param,
-	Delete,
-} from "@nestjs/common";
+import { Res, Controller, Get, Post, Body, Param } from "@nestjs/common";
 import { Response } from "express";
 import { FileService } from "./file.service";
 import { CreateFileDto } from "./dto/create-file.dto";
@@ -28,7 +19,8 @@ export class FileController {
 		return user
 			? res.status(201).send(await this.fileService.create(createFileDto))
 			: res.status(400).send({
-					msg: "Você precisa estar cadastrado para criar um arquivo",
+					message:
+						"Você precisa estar cadastrado para criar um arquivo",
 				});
 	}
 
@@ -41,17 +33,19 @@ export class FileController {
 
 		if (!user)
 			return res.status(400).send({
-				msg: "Você precisa estar cadastrado para adicionar alguém em um arquivo",
+				message:
+					"Você precisa estar cadastrado para adicionar alguém em um arquivo",
 			});
 
 		const file = await this.fileService.findFile(addUserFileDto.file);
 
-		if (!file) return res.status(400).send({ msg: "Arquivo inexistente" });
+		if (!file)
+			return res.status(400).send({ message: "Arquivo inexistente" });
 
 		await this.fileService.addUserFile(addUserFileDto);
 		return res
 			.status(201)
-			.send({ msg: "Usuário adicionado ao arquivo com sucesso" });
+			.send({ message: "Usuário adicionado ao arquivo com sucesso" });
 	}
 
 	@Get("/getFilesByUser/:user")
@@ -60,7 +54,7 @@ export class FileController {
 
 		if (!existUser)
 			return res.status(400).send({
-				msg: "Você precisa estar cadastrado para realizar o login",
+				message: "Você precisa estar cadastrado para realizar o login",
 			});
 
 		return res
@@ -74,7 +68,7 @@ export class FileController {
 
 		if (!existFile)
 			return res.status(404).send({
-				msg: "Aquivo não encontrado",
+				message: "Aquivo não encontrado",
 			});
 
 		return res
@@ -92,7 +86,7 @@ export class FileController {
 
 		if (!existUser)
 			return res.status(400).send({
-				msg: "Você precisa estar cadastrado para realizar o login",
+				message: "Você precisa estar cadastrado para realizar o login",
 			});
 
 		return res

@@ -18,7 +18,7 @@ export class UserController {
 
 		if (existUser)
 			return res.status(400).send({
-				msg: "Já existe um usuário cadastrado com esse email",
+				message: "Já existe um usuário cadastrado com esse email",
 			});
 
 		createUserDto.password = this.hashPassword(createUserDto.password);
@@ -35,11 +35,11 @@ export class UserController {
 		if (!result)
 			return res
 				.status(400)
-				.send({ msg: "Não existe nenhum usuário com esse email" });
+				.send({ message: "Não existe nenhum usuário com esse email" });
 
 		return this.checkPassword(loginUserDto.password, result.password)
 			? res.status(200).send({ token: this.encode(result.email) })
-			: res.status(400).send({ msg: "Senha incorreta" });
+			: res.status(400).send({ message: "Senha incorreta" });
 	}
 
 	@Get("/email/:email")
@@ -47,9 +47,9 @@ export class UserController {
 		const result = await this.service.findUser(email);
 		return result
 			? res.status(200).send(result)
-			: res
-					.status(400)
-					.send({ msg: "Não existe nenhum usuário com esse nome" });
+			: res.status(400).send({
+					message: "Não existe nenhum usuário com esse nome",
+				});
 	}
 
 	@Get("/search/:email")
@@ -65,7 +65,7 @@ export class UserController {
 			const user = await this.service.findUser(email as string);
 			return res.status(200).send(user);
 		} catch (error) {
-			return res.status(400).send({ msg: "Token inválido" });
+			return res.status(400).send({ message: "Token inválido" });
 		}
 	}
 
