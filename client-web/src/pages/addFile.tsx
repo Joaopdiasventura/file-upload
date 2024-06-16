@@ -47,6 +47,9 @@ export function AddFile() {
 	};
 
 	const processCSV = (csv: string) => {
+		while (csv.includes(",,")) {
+      			csv = csv.replace(/,,/g, ",");
+    		}
 		const lines = csv.split("\n");
 		const headers = lines[0].split(",");
 		const rows = lines.slice(1).map((line) => {
