@@ -38,6 +38,9 @@ export class FileService {
 	async getFilesByUser(user: string) {
 		const filesWithUser = await this.prisma.userFile.findMany({
 			where: { user },
+			orderBy: {
+				lastChange: "desc",
+			},
 			include: {
 				fk_file_id: true,
 			},
@@ -49,6 +52,9 @@ export class FileService {
 	async getUsersByFile(file: string) {
 		const users = await this.prisma.userFile.findMany({
 			where: { file },
+			orderBy: {
+				lastChange: "desc",
+			},
 			include: {
 				fk_user_email: true,
 			},
@@ -66,6 +72,9 @@ export class FileService {
 						contains: name,
 					},
 				},
+			},
+			orderBy: {
+				lastChange: "desc",
 			},
 			include: {
 				fk_file_id: true,

@@ -18,6 +18,7 @@ model UserFile {
   id            String  @id @default(auto()) @map("_id") @db.ObjectId
   canChange     Boolean
   isAdm         Boolean
+  lastChange DateTime @default(now()) @map("last_change")
   user          String  @map("fk_user_email")
   file          String  @map("fk_file_id") @db.ObjectId
   fk_user_email User    @relation(references: [email], fields: [user])
