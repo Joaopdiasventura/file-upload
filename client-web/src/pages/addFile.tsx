@@ -47,13 +47,17 @@ export function AddFile() {
 	};
 
 	const processCSV = (csv: string) => {
+		while (csv.includes(";;")) {
+			csv = csv.replace(/;;/g, ";");
+		}
 		while (csv.includes(",,")) {
-      			csv = csv.replace(/,,/g, ",");
-    		}
+			csv = csv.replace(/,,/g, ",");
+		}
+
 		const lines = csv.split("\n");
-		const headers = lines[0].split(",");
+		const headers = csv.includes(";") ? lines[0].split(";") : lines[0].split(",");
 		const rows = lines.slice(1).map((line) => {
-			const values = line.split(",");
+			const values = csv.includes(";") ? line.split(";") : line.split(",");
 			const row: CsvRow = headers.reduce((acc, header, index) => {
 				acc[header.trim()] = values[index]?.trim();
 				return acc;
@@ -77,7 +81,7 @@ export function AddFile() {
 				.post("/file", { name, metadata, user: `${user.email}` })
 				.then((result) => result.data);
 			alert("Arquivo enviado com sucesso");
-			navigate("/")
+			navigate("/");
 		} catch (error: any) {
 			alert(error.response.data.message);
 		}
@@ -89,10 +93,14 @@ export function AddFile() {
 
 	return (
 		<div className="w-full h-full">
-			<Header/>
+			<Header />
 			<form onSubmit={postFile}>
 				<EnterInput type="file" accept=".csv" onChange={handleFileUpload} /> <br />
-				<EnterInput type="submit" value="ENVIAR" className="border rounded p-1 border-black"/>
+				<EnterInput
+					type="submit"
+					value="ENVIAR"
+					className="border rounded p-1 border-black"
+				/>
 			</form>
 			<table>
 				<thead>
