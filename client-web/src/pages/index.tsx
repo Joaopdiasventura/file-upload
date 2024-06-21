@@ -29,7 +29,6 @@ export function Index() {
 			const result = await app
 				.get(`/file/getFilesByUser/${user.email}`)
 				.then((result) => result.data);
-			console.log(result);
 			setFiles(result);
 		}
 	};
